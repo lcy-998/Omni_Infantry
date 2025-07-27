@@ -1,0 +1,153 @@
+{
+  "name": "ChassisTest",
+  "type": "ARM",
+  "dependenceList": [],
+  "srcDirs": [
+    "Core",
+    "Drivers",
+    "Middlewares",
+    "bsp",
+    "module",
+    "application"
+  ],
+  "virtualFolder": {
+    "name": "<virtual_root>",
+    "files": [],
+    "folders": [
+      {
+        "name": "startup",
+        "files": [
+          {
+            "path": "startup_stm32f407xx.s"
+          }
+        ],
+        "folders": []
+      }
+    ]
+  },
+  "outDir": "build",
+  "deviceName": null,
+  "packDir": null,
+  "miscInfo": {
+    "uid": "03a8b431990c14d759b8128387313c4f"
+  },
+  "targets": {
+    "Debug": {
+      "excludeList": [
+        "application/startup_stm32f407xx.s"
+      ],
+      "toolchain": "GCC",
+      "compileConfig": {
+        "cpuType": "Cortex-M4",
+        "floatingPointHardware": "single",
+        "archExtensions": "",
+        "scatterFilePath": "STM32F407IGHx_FLASH.ld",
+        "useCustomScatterFile": true,
+        "storageLayout": {
+          "RAM": [],
+          "ROM": []
+        },
+        "options": "null"
+      },
+      "uploader": "STLink",
+      "uploadConfig": {
+        "bin": "",
+        "proType": "SWD",
+        "resetMode": "default",
+        "runAfterProgram": true,
+        "speed": 4000,
+        "address": "0x08000000",
+        "elFile": "None",
+        "optionBytes": ".eide/debug.st.option.bytes.ini",
+        "otherCmds": ""
+      },
+      "uploadConfigMap": {
+        "JLink": {
+          "bin": "",
+          "baseAddr": "",
+          "cpuInfo": {
+            "vendor": "null",
+            "cpuName": "null"
+          },
+          "proType": 1,
+          "speed": 8000,
+          "otherCmds": ""
+        },
+        "STLink": {
+          "bin": "",
+          "proType": "SWD",
+          "resetMode": "default",
+          "runAfterProgram": true,
+          "speed": 4000,
+          "address": "0x08000000",
+          "elFile": "None",
+          "optionBytes": ".eide/debug.st.option.bytes.ini",
+          "otherCmds": ""
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [
+          "Core/Inc",
+          "Drivers/STM32F4xx_HAL_Driver/Inc",
+          "Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",
+          "Middlewares/Third_Party/FreeRTOS/Source/include",
+          "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2",
+          "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
+          "Drivers/CMSIS/Device/ST/STM32F4xx/Include",
+          "Drivers/CMSIS/Include",
+          "Middlewares/ST/ARM/DSP/Inc",
+          "bsp/can",
+          "module/motor/DJImotor",
+          "module/motor",
+          "module/algorithm",
+          "module",
+          "bsp/usart",
+          "module/remote_control",
+          "module/daemon",
+          "application",
+          "application/Chassis",
+          "module/message_center",
+          "application/Cmd"
+        ],
+        "libList": [],
+        "defineList": [
+          "USE_HAL_DRIVER",
+          "STM32F407xx"
+        ]
+      },
+      "builderOptions": {
+        "GCC": {
+          "version": 5,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [],
+          "global": {
+            "$float-abi-type": "softfp",
+            "output-debug-info": "enable",
+            "misc-control": "--specs=nosys.specs --specs=nano.specs"
+          },
+          "c/cpp-compiler": {
+            "language-c": "c11",
+            "language-cpp": "c++11",
+            "optimization": "level-debug",
+            "warnings": "all-warnings",
+            "one-elf-section-per-function": true,
+            "one-elf-section-per-data": true,
+            "C_FLAGS": "",
+            "CXX_FLAGS": ""
+          },
+          "asm-compiler": {
+            "ASM_FLAGS": ""
+          },
+          "linker": {
+            "output-format": "elf",
+            "remove-unused-input-sections": true,
+            "LD_FLAGS": "",
+            "LIB_FLAGS": "-lm"
+          }
+        }
+      }
+    }
+  },
+  "version": "3.6"
+}
