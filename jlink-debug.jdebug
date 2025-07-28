@@ -4,8 +4,8 @@
 *                         www.segger.com                             *
 **********************************************************************
 
-File          : D:/STM32/ChassisTest/jlink-debug.jdebug
-Created       : 27 Jul 2025 10:40
+File          : D:/STM32/RCImprovement/Omni_Infantry/jlink-debug.jdebug
+Created       : 28 Jul 2025 21:33
 Ozone Version : V3.38g
 */
 
@@ -22,10 +22,10 @@ void OnProjectLoad (void) {
   //
   // Dialog-generated settings
   //
-  Project.AddPathSubstitute ("D:/STM32/ChassisTest", "$(ProjectDir)");
-  Project.AddPathSubstitute ("d:/stm32/chassistest", "$(ProjectDir)");
+  Project.AddPathSubstitute ("D:/STM32/RCImprovement/Omni_Infantry", "$(ProjectDir)");
+  Project.AddPathSubstitute ("d:/stm32/rcimprovement/omni_infantry", "$(ProjectDir)");
   Project.SetDevice ("STM32F407IG");
-  Project.SetHostIF ("USB", "");
+  Project.SetHostIF ("USB", "150710330");
   Project.SetTargetIF ("SWD");
   Project.SetTIFSpeed ("4 MHz");
   Project.AddSvdFile ("$(InstallDir)/Config/CPU/Cortex-M4F.svd");
@@ -33,6 +33,7 @@ void OnProjectLoad (void) {
   //
   // User settings
   //
+  Edit.SysVar (VAR_HSS_SPEED, FREQ_100_HZ);
   File.Open ("$(ProjectDir)/build/Debug/ChassisTest.elf");
 }
 

@@ -1,30 +1,23 @@
 
 
-OpenDocument="tasks.c", FilePath="d:/STM32/ChassisTest/Middlewares/Third_Party/FreeRTOS/Source/tasks.c", Line=3640
-OpenDocument="remote_control.c", FilePath="d:/STM32/ChassisTest/module/remote_control/remote_control.c", Line=0
-OpenDocument="main.c", FilePath="d:/STM32/ChassisTest/Core/Src/main.c", Line=62
-OpenDocument="DJImotor.c", FilePath="d:/STM32/ChassisTest/module/motor/DJImotor/DJImotor.c", Line=78
-OpenDocument="stm32f4xx_hal_can.c", FilePath="d:/STM32/ChassisTest/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c", Line=1516
-OpenDocument="bsp_can.c", FilePath="d:/STM32/ChassisTest/bsp/can/bsp_can.c", Line=78
-OpenDocument="chassis.c", FilePath="d:/STM32/ChassisTest/application/Chassis/chassis.c", Line=36
-OpenDocument="robot_cmd.c", FilePath="d:/STM32/ChassisTest/application/Cmd/robot_cmd.c", Line=0
-OpenDocument="stm32f4xx_it.c", FilePath="d:/STM32/ChassisTest/Core/Src/stm32f4xx_it.c", Line=183
-OpenDocument="bsp_usart.c", FilePath="d:/STM32/ChassisTest/bsp/usart/bsp_usart.c", Line=0
-OpenDocument="startup_stm32f407xx.s", FilePath="d:/STM32/ChassisTest/startup_stm32f407xx.s", Line=53
+
+Breakpoint=d:/STM32/RCImprovement/Omni_Infantry/module/remote_control/remote_control.c:44, State=BP_STATE_ON
+GraphedExpression="((motor_lf)->measure).speed_aps", Color=#e56a6f
+GraphedExpression="(((motor_lf)->motor_controller).speed_pid)->ref", Color=#35792b
+OpenDocument="robot_cmd.c", FilePath="d:/STM32/RCImprovement/Omni_Infantry/application/Cmd/robot_cmd.c", Line=0
+OpenDocument="chassis.c", FilePath="d:/STM32/RCImprovement/Omni_Infantry/application/Chassis/chassis.c", Line=9
+OpenDocument="remote_control.c", FilePath="d:/STM32/RCImprovement/Omni_Infantry/module/remote_control/remote_control.c", Line=34
+OpenDocument="main.c", FilePath="d:/STM32/RCImprovement/Omni_Infantry/Core/Src/main.c", Line=62
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Source Files", DockArea=LEFT, x=0, y=1, w=632, h=207, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=0, w=632, h=444, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
-OpenWindow="Data Sampling", DockArea=BOTTOM, x=0, y=0, w=264, h=272, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=BOTTOM, x=1, y=0, w=1655, h=272, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="1 ns / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="1453;121", DataGraphShowNamesAtCursor=0, PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="1461;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="1411;0"
+OpenWindow="Source Files", DockArea=LEFT, x=0, y=1, w=632, h=221, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=0, w=632, h=430, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Data Sampling", DockArea=BOTTOM, x=0, y=0, w=1920, h=272, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
 SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
-TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[239;100;100;100;672]
-TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time"], ColWidths=[100;100]
-TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[231;100;100;100;100;100;100;107;107]
+TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[239;100;100;100;784]
+TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" ((motor_lf)->measure).speed_aps";" (((motor_lf)->motor_controller).speed_pid)->ref"], ColWidths=[100;100;100;123]
+TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="DESCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[231;100;100;100;100;100;100;107;982]
 TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
-TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Refresh"], ColWidths=[206;248;157]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
+TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[26;26;26;26]
+TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Refresh"], ColWidths=[206;248;157]
 WatchedExpression="motor_lf", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="motor_rf", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="motor_lb", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="motor_rb", RefreshRate=5, Window=Watched Data 1
-WatchedExpression="rc_ctrl", RefreshRate=5, Window=Watched Data 1

@@ -28,9 +28,24 @@ void RobotCmdInit(void)
 
 static void RemoteControlSet(void)
 {
-    chassis_cmd_send.vx = WHEEL_SPEED_MX * (float)rc_data[TEMP].rc.ch0 / 660.0;
-    chassis_cmd_send.vy = WHEEL_SPEED_MX * (float)rc_data[TEMP].rc.ch1 / 660.0;
+    chassis_cmd_send.vx = WHEEL_SPEED_MX * (float)rc_data[TEMP].rc.ch1 / 660.0;
+    chassis_cmd_send.vy = WHEEL_SPEED_MX * (float)rc_data[TEMP].rc.ch0 / 660.0;
     chassis_cmd_send.wz = CHASSIS_APS_MX * (float)rc_data[TEMP].rc.ch2 / 660.0;
+    
+    switch (rc_data[TEMP].rc.sr)
+    {
+    case RC_SW_UP:
+        chassis_cmd_send.chassis_mode = CHASSIS_ROTATE;
+        break;
+    case RC_SW_MID:
+        chassis_cmd_send.chassis_mode = CHASSIS_FOLLOW;
+        break;
+    case RC_SW_DOWN:
+        chassis_cmd_send.chassis_mode = CHASSIS_ZERO_FORCE;
+        break;
+    default:
+        break;
+    }
 }
 
 void RobotCmdTask(void)

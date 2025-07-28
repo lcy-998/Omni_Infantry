@@ -90,6 +90,11 @@ static void LimitChassisOutput(void)
 
 static void ChassisSpeedCalculate(void)
 {
+    wt_lf = motor_lf->measure.speed_aps / M3508_RATIO;
+    wt_rf = motor_rf->measure.speed_aps / M3508_RATIO;
+    wt_lb = motor_lb->measure.speed_aps / M3508_RATIO;
+    wt_rb = motor_rb->measure.speed_aps / M3508_RATIO;
+
     chassis_feedback_data.vx = -(WHEEL_RADIUS * _1_SQRT2 / 2.0 / wt_lf) - (WHEEL_RADIUS * _1_SQRT2 / 2.0 / wt_lb) + (WHEEL_RADIUS * _1_SQRT2 / 2.0 / wt_rb) + (WHEEL_RADIUS * _1_SQRT2 / 2.0 / wt_rf);
     chassis_feedback_data.vy =  (WHEEL_RADIUS * _1_SQRT2 / 2.0 / wt_lf) - (WHEEL_RADIUS * _1_SQRT2 / 2.0 / wt_lb) - (WHEEL_RADIUS * _1_SQRT2 / 2.0 / wt_rb) + (WHEEL_RADIUS * _1_SQRT2 / 2.0 / wt_rf);
     chassis_feedback_data.wz =  (WHEEL_RADIUS / 4.0 / HALF_TRACK_WIDTH) * (wt_lb + wt_lf + wt_rb + wt_rf);
@@ -98,15 +103,38 @@ static void ChassisSpeedCalculate(void)
 void ChassisTask(void)
 {
     SubGetMessage(chassis_sub, &chassis_cmd_recv);
+
+    if(chassis_cmd_recv.chassis_mode == CHASSIS_ZERO_FORCE)
+    {
+        DJIMotorStop(motor_lf);
+        DJIMotorStop(motor_rf);
+        DJIMotorStop(motor_lb);
+        DJIMotorStop(motor_rb);
+    }
+    else
+    {
+        DJIMotorEnable(motor_lf);
+        DJIMotorEnable(motor_rf);
+        DJIMotorEnable(motor_lb);
+        DJIMotorEnable(motor_rb);
+    }
+
+    switch (chassis_cmd_recv.chassis_mode)
+    {
+    case CHASSIS_ROTATE:
+        chassis_cmd_recv.wz = CHASSIS_APS_MX;
+        break;
+    
+    case CHASSIS_FOLLOW:
+        break;    
+    
+    case CHASSIS_NO_FOLLOW:
+        break;
+    }
     
     WheelSpeedCalculate();
 
     LimitChassisOutput();
-
-    wt_lf = motor_lf->measure.speed_aps / M3508_RATIO;
-    wt_rf = motor_rf->measure.speed_aps / M3508_RATIO;
-    wt_lb = motor_lb->measure.speed_aps / M3508_RATIO;
-    wt_rb = motor_rb->measure.speed_aps / M3508_RATIO; //轮子角速度
 
     ChassisSpeedCalculate();
 

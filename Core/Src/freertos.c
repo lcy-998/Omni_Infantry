@@ -28,6 +28,7 @@
 #include "motor_task.h"
 #include "chassis.h"
 #include "robot_cmd.h"
+#include "daemon.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,6 +71,13 @@ const osThreadAttr_t _RobotCmdTask_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for _DaemonTask */
+osThreadId_t _DaemonTaskHandle;
+const osThreadAttr_t _DaemonTask_attributes = {
+  .name = "_DaemonTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -79,6 +87,7 @@ const osThreadAttr_t _RobotCmdTask_attributes = {
 void _chassisTask(void *argument);
 void _motorTask(void *argument);
 void _robotCmdTask(void *argument);
+void _daemonTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -118,6 +127,9 @@ void MX_FREERTOS_Init(void) {
   /* creation of _RobotCmdTask */
   _RobotCmdTaskHandle = osThreadNew(_robotCmdTask, NULL, &_RobotCmdTask_attributes);
 
+  /* creation of _DaemonTask */
+  _DaemonTaskHandle = osThreadNew(_daemonTask, NULL, &_DaemonTask_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -142,7 +154,7 @@ void _chassisTask(void *argument)
   for(;;)
   {
     ChassisTask();
-    osDelay(1);
+    osDelay(2);
   }
   /* USER CODE END _chassisTask */
 }
@@ -180,9 +192,28 @@ void _robotCmdTask(void *argument)
   for(;;)
   {
     RobotCmdTask();
-    osDelay(1);
+    osDelay(2);
   }
   /* USER CODE END _robotCmdTask */
+}
+
+/* USER CODE BEGIN Header__daemonTask */
+/**
+* @brief Function implementing the _DaemonTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header__daemonTask */
+void _daemonTask(void *argument)
+{
+  /* USER CODE BEGIN _daemonTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    DaemonTask();
+    osDelay(10);
+  }
+  /* USER CODE END _daemonTask */
 }
 
 /* Private application code --------------------------------------------------*/
