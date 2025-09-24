@@ -52,6 +52,12 @@ typedef enum
     MOTOR_ENABLE = 1
 }Motor_Working_Type_e;
 
+typedef enum
+{
+    POWER_CONTROL_DISABLE = 0,
+    POWER_CONTROL_ENABLE = 1
+}Power_Control_Flag_e;
+
 typedef struct 
 {
     Closeloop_Type_e close_loop;
@@ -63,6 +69,8 @@ typedef struct
     Feedback_Sourse_e speed_feedback_source;
 
     Feedforward_Type_e feedforward_flag;
+
+    Power_Control_Flag_e power_control_flag;
 }Motor_Setting_s;
 
 typedef struct 

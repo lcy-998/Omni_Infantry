@@ -29,6 +29,8 @@
 #include "chassis.h"
 #include "robot_cmd.h"
 #include "daemon.h"
+#include "Gimbal.h"
+#include "ins_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -78,6 +80,20 @@ const osThreadAttr_t _DaemonTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for _GimbalTask */
+osThreadId_t _GimbalTaskHandle;
+const osThreadAttr_t _GimbalTask_attributes = {
+  .name = "_GimbalTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for _INSTask */
+osThreadId_t _INSTaskHandle;
+const osThreadAttr_t _INSTask_attributes = {
+  .name = "_INSTask",
+  .stack_size = 1024 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -88,6 +104,8 @@ void _chassisTask(void *argument);
 void _motorTask(void *argument);
 void _robotCmdTask(void *argument);
 void _daemonTask(void *argument);
+void _gimbalTask(void *argument);
+void INSTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -129,6 +147,12 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of _DaemonTask */
   _DaemonTaskHandle = osThreadNew(_daemonTask, NULL, &_DaemonTask_attributes);
+
+  /* creation of _GimbalTask */
+  _GimbalTaskHandle = osThreadNew(_gimbalTask, NULL, &_GimbalTask_attributes);
+
+  /* creation of _INSTask */
+  _INSTaskHandle = osThreadNew(INSTask, NULL, &_INSTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -214,6 +238,44 @@ void _daemonTask(void *argument)
     osDelay(10);
   }
   /* USER CODE END _daemonTask */
+}
+
+/* USER CODE BEGIN Header__gimbalTask */
+/**
+* @brief Function implementing the _GimbalTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header__gimbalTask */
+void _gimbalTask(void *argument)
+{
+  /* USER CODE BEGIN _gimbalTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    GimbalTask();
+    osDelay(2);
+  }
+  /* USER CODE END _gimbalTask */
+}
+
+/* USER CODE BEGIN Header_INSTask */
+/**
+* @brief Function implementing the _INSTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_INSTask */
+void INSTask(void *argument)
+{
+  /* USER CODE BEGIN INSTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    INS_Task();
+    osDelay(1);
+  }
+  /* USER CODE END INSTask */
 }
 
 /* Private application code --------------------------------------------------*/

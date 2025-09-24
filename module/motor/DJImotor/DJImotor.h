@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #define DJI_MOTOR_CNT 12
+#define DJI_MOTOR_POWER_CONTROL_CNT 4 //需要功率控制的电机数量
 
 #define ECD_ANGLE_COEF_DJI 0.43945f
 #define SPEED_SMOOTH_COEF 1.0f

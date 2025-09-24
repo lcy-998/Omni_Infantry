@@ -26,13 +26,14 @@ PIDInstance *PIDRegister(PID_Init_Config_s *config)
     instance->Output_LPF_RC = config->Output_LPF_RC;
     instance->Derivative_LPF_RC = config->Derivative_LPF_RC;
 
-    instance->dt = 0.001;
+    DWT_GetDeltaT(&instance->DWT_CNT);
 
     return instance;
 }
 
 float PIDCalculate(PIDInstance *pid, float measure, float ref)
 {
+    pid->dt = DWT_GetDeltaT(&pid->DWT_CNT);
     
     pid->Last_Measure = pid->Measure;
     pid->Last_Err = pid->Err;

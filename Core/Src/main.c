@@ -21,6 +21,8 @@
 #include "cmsis_os.h"
 #include "can.h"
 #include "dma.h"
+#include "spi.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -29,6 +31,8 @@
 #include "motor_task.h"
 #include "chassis.h"
 #include "robot_cmd.h"
+#include "Gimbal.h"
+#include "bsp_init.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,10 +101,14 @@ int main(void)
   MX_CAN2_Init();
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
+  MX_SPI1_Init();
+  MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
 __disable_irq();
+ BSPInit();
  ChassisInit();
  RobotCmdInit();
+ GimbalInit();
 __enable_irq();
   /* USER CODE END 2 */
 

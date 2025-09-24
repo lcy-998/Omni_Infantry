@@ -18,6 +18,9 @@ static CANInstance sender_assignment[6] = {
 
 static uint8_t sender_enable_flag[6] = {0};
 
+static float K0, K1, K2, K3; //计算公式：K0 + K1*IW + K2*I*I + K3*w*w
+static float chassis_power_max; 
+
 static void MotorSenderGrouping(DJIMotorInstance *instance, CAN_Init_Config_s *config)
 {
     uint8_t motor_id = config->tx_id - 1;
@@ -148,7 +151,13 @@ void DJIMotorControl(void)
     Motor_Controller_s *motor_controller;
     Motor_Setting_s *motor_setting;
     DJI_Motor_Measures_s *dji_motor_measure;
-    float pid_measure, pid_ref;
+    float pid_measure = 0, pid_ref;
+
+    float power_out[DJI_MOTOR_POWER_CONTROL_CNT] = {0}; 
+    float power_control_aps[DJI_MOTOR_POWER_CONTROL_CNT] = {0};
+    float power_control_current[DJI_MOTOR_POWER_CONTROL_CNT] = {0};
+    uint8_t power_control_idx = 0;
+    uint8_t pc_motor_stop_flag = 0; //置1说明至少一个底盘电机被叫停
 
     for(size_t i = 0; i < idx; i++)
     {
@@ -200,24 +209,96 @@ void DJIMotorControl(void)
                 pid_ref += *motor_controller->current_feedforward_ptr;
             }
 
+            if(motor_setting->power_control_flag == POWER_CONTROL_ENABLE)
+            {
+                power_control_aps[power_control_idx] = pid_measure;
+                power_control_current[power_control_idx] = pid_ref;
+                power_out[power_control_idx++] = K0 + K1 * pid_ref * pid_measure + K2 * pid_ref * pid_ref + K3 * pid_measure * pid_measure;
+            }
+            
             set = (int16_t)pid_ref;
-          
+        
             group = instance->sender_group;
             num = instance->message_num;
 
             sender_assignment[group].tx_buffer[2 * num] = (uint8_t)(set >> 8);
             sender_assignment[group].tx_buffer[2 * num + 1] = (uint8_t)(set & 0x00ff);
+            
         }
         else
         {
+            if(motor_setting->power_control_flag == POWER_CONTROL_ENABLE)
+                pc_motor_stop_flag = 1;
             group = instance->sender_group;
             num = instance->message_num;
             memset(&sender_assignment[group].tx_buffer[2 * num], 0, sizeof(uint16_t));
         }
     
     }
+
+    if(pc_motor_stop_flag == 0)
+    {
+        float total_power = 0;
+        for(size_t j = 0; j < DJI_MOTOR_POWER_CONTROL_CNT; j++)
+        {
+            if(power_out[j] < 0)
+            {
+                continue;
+            }
+            total_power += power_out[j];
+        }
+        if(total_power > chassis_power_max)
+        {
+            float ratio = chassis_power_max / total_power;
+            for(size_t i = 0; i < DJI_MOTOR_POWER_CONTROL_CNT; i++)
+            {
+                if(power_out[i] < 0)
+                {
+                    continue;
+                }
+                power_out[i] *= ratio; 
+                float a = K2;
+                float b = K1 * power_control_aps[i];
+                float c = K3 * power_control_aps[i] * power_control_aps[i] ;
+                if(power_control_current[i] > 0)
+                {
+                    power_out[i] = (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
+                    if(power_out[i] > 15000)
+                    {
+                        power_out[i] = 15000;
+                    }
+                }
+                else
+                {
+                    power_out[i] = (-b - sqrt(b * b - 4 * a * c)) / (2 * a);
+                    if(power_out[i] < -15000)
+                    {
+                        power_out[i] = -15000;
+                    } 
+                }
+            }
+        }
+
+        for(size_t i = 0, j = 0; i < idx; i++)
+        {
+            if(dji_motor_insatance_list[i]->motor_setting.power_control_flag == POWER_CONTROL_ENABLE)
+            {
+                instance = dji_motor_insatance_list[i];
+
+                set = (int16_t)power_out[j];
+        
+                group = instance->sender_group;
+                num = instance->message_num;
+
+                sender_assignment[group].tx_buffer[2 * num] = (uint8_t)(set >> 8);
+                sender_assignment[group].tx_buffer[2 * num + 1] = (uint8_t)(set & 0x00ff);
+
+                j++;
+            }
+        }
+    }
+
  
-   
 
     for(size_t i = 0; i < 6; i++)
     {

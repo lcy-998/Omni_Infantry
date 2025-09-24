@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include <math.h>
+#include "bsp_dwt.h"
 
 #define my_abs(x) ((x > 0) ? (x) : -(x))
 
@@ -52,6 +53,7 @@ typedef struct
 
     float ref;
 
+    uint32_t DWT_CNT;
     float dt;
 
 }PIDInstance;

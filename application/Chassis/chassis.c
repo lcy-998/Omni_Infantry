@@ -2,8 +2,10 @@
 #include "robot_def.h"
 #include "DJImotor.h"
 #include "message_center.h"
+#include "general_def.h"
 
 #include "math.h"
+#include "arm_math.h"
 
 #define _1_SQRT2 0.7071067f
 
@@ -20,6 +22,7 @@ static Chassis_Upload_Data_s chassis_feedback_data;
 
 static DJIMotorInstance *motor_lf, *motor_rf, *motor_lb, *motor_rb;
 
+static float chassis_vx, chassis_vy;//底盘坐标系下的底盘速度
 static float wt_lf, wt_rf, wt_lb, wt_rb; //轮子角速度max = 54000
 float temp_v;
 
@@ -42,6 +45,7 @@ void ChassisInit(void)
             .close_loop = SPEED_LOOP,
             .angle_feedback_source = MOTOR_FEED,
             .speed_feedback_source = MOTOR_FEED,
+            .power_control_flag = POWER_CONTROL_ENABLE,
         },
         .motor_type = M3508,
     };
@@ -66,12 +70,21 @@ void ChassisInit(void)
     chassis_sub = SubRegister("chassis_cmd", sizeof(Chassis_Ctrl_Cmd_s));
 }
 
+static void GimbalToChassis(void)
+{
+    static float sin_theta, cos_theta;
+    sin_theta = arm_sin_f32(chassis_cmd_recv.offset_angle * DEGREE_2_RAD);
+    cos_theta = arm_cos_f32(chassis_cmd_recv.offset_angle * DEGREE_2_RAD);
+    chassis_vx = chassis_cmd_recv.vx * cos_theta - chassis_cmd_recv.vy * sin_theta;
+    chassis_vy = chassis_cmd_recv.vx * sin_theta + chassis_cmd_recv.vy * cos_theta;
+}
+
 static void WheelSpeedCalculate(void)
 {
-    wt_lf = -(_1_SQRT2 * chassis_cmd_recv.vx / WHEEL_RADIUS) + (_1_SQRT2 * chassis_cmd_recv.vy / WHEEL_RADIUS) + (chassis_cmd_recv.wz * HALF_TRACK_WIDTH / WHEEL_RADIUS);
-    wt_lb = -(_1_SQRT2 * chassis_cmd_recv.vx / WHEEL_RADIUS) - (_1_SQRT2 * chassis_cmd_recv.vy / WHEEL_RADIUS) + (chassis_cmd_recv.wz * HALF_TRACK_WIDTH / WHEEL_RADIUS);
-    wt_rb = (_1_SQRT2 * chassis_cmd_recv.vx / WHEEL_RADIUS) - (_1_SQRT2 * chassis_cmd_recv.vy / WHEEL_RADIUS) + (chassis_cmd_recv.wz * HALF_TRACK_WIDTH / WHEEL_RADIUS);
-    wt_rf = (_1_SQRT2 * chassis_cmd_recv.vx / WHEEL_RADIUS) + (_1_SQRT2 * chassis_cmd_recv.vy / WHEEL_RADIUS) + (chassis_cmd_recv.wz * HALF_TRACK_WIDTH / WHEEL_RADIUS); //轮子角速度
+    wt_lf = -(_1_SQRT2 * chassis_vx / WHEEL_RADIUS) + (_1_SQRT2 * chassis_vy / WHEEL_RADIUS) + (chassis_cmd_recv.wz * HALF_TRACK_WIDTH / WHEEL_RADIUS);
+    wt_lb = -(_1_SQRT2 * chassis_vx / WHEEL_RADIUS) - (_1_SQRT2 * chassis_vy / WHEEL_RADIUS) + (chassis_cmd_recv.wz * HALF_TRACK_WIDTH / WHEEL_RADIUS);
+    wt_rb = (_1_SQRT2 * chassis_vx / WHEEL_RADIUS) - (_1_SQRT2 * chassis_vy / WHEEL_RADIUS) + (chassis_cmd_recv.wz * HALF_TRACK_WIDTH / WHEEL_RADIUS);
+    wt_rf = (_1_SQRT2 * chassis_vx / WHEEL_RADIUS) + (_1_SQRT2 * chassis_vy / WHEEL_RADIUS) + (chassis_cmd_recv.wz * HALF_TRACK_WIDTH / WHEEL_RADIUS); //轮子角速度
 
     wt_lf *= M3508_RATIO;
     wt_lb *= M3508_RATIO;
@@ -122,7 +135,8 @@ void ChassisTask(void)
     switch (chassis_cmd_recv.chassis_mode)
     {
     case CHASSIS_ROTATE:
-        chassis_cmd_recv.wz = CHASSIS_APS_MX;
+        chassis_cmd_recv.wz = 0.5 * CHASSIS_APS_MX;
+        
         break;
     
     case CHASSIS_FOLLOW:
@@ -130,7 +144,10 @@ void ChassisTask(void)
     
     case CHASSIS_NO_FOLLOW:
         break;
+    default:
+        break;
     }
+    GimbalToChassis();
     
     WheelSpeedCalculate();
 
