@@ -21,7 +21,7 @@ typedef struct
 {
     TIM_HandleTypeDef *handle;
     uint32_t channel;
-    float period;
+    float period;//此处是真正的周期，不是ARR的值（ARR的值为period * (tclk / (psc + 1))）
     float dutyratio;
     void (*pwm_module_callback)(PWMInstance *);
     void *id;

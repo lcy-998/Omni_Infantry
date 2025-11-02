@@ -153,7 +153,7 @@ static uint8_t BMI088GyroInit(BMI088Instance *instance)
     }
     instance->gyro_offset[0] = 0.00193356676;
     instance->gyro_offset[1] = -0.00593106402f;
-    instance->gyro_offset[2] = -0.0000171210995f;
+    instance->gyro_offset[2] = -0.0002371210995f;
     return error;
 }
 

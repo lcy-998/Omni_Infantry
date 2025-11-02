@@ -33,6 +33,7 @@
 #include "robot_cmd.h"
 #include "Gimbal.h"
 #include "bsp_init.h"
+#include "shoot.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -103,12 +104,14 @@ int main(void)
   MX_USART3_UART_Init();
   MX_SPI1_Init();
   MX_TIM10_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 __disable_irq();
  BSPInit();
  ChassisInit();
  RobotCmdInit();
  GimbalInit();
+ ShootInit();
 __enable_irq();
   /* USER CODE END 2 */
 

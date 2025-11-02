@@ -7,16 +7,22 @@
 static uint8_t idx = 0;
 static DJIMotorInstance *dji_motor_insatance_list[DJI_MOTOR_CNT];
 
-static CANInstance sender_assignment[6] = {
+static CANInstance sender_assignment[10] = {
     [0] = {.can_handle = &hcan1, .txconf.StdId = 0x1ff, .txconf.IDE = CAN_ID_STD, .txconf.DLC = 0x08, .txconf.RTR = CAN_RTR_DATA, .tx_buffer = {0}},
     [1] = {.can_handle = &hcan1, .txconf.StdId = 0x200, .txconf.IDE = CAN_ID_STD, .txconf.DLC = 0x08, .txconf.RTR = CAN_RTR_DATA, .tx_buffer = {0}},
     [2] = {.can_handle = &hcan1, .txconf.StdId = 0x2ff, .txconf.IDE = CAN_ID_STD, .txconf.DLC = 0x08, .txconf.RTR = CAN_RTR_DATA, .tx_buffer = {0}},
     [3] = {.can_handle = &hcan2, .txconf.StdId = 0x1ff, .txconf.IDE = CAN_ID_STD, .txconf.DLC = 0x08, .txconf.RTR = CAN_RTR_DATA, .tx_buffer = {0}},
     [4] = {.can_handle = &hcan2, .txconf.StdId = 0x200, .txconf.IDE = CAN_ID_STD, .txconf.DLC = 0x08, .txconf.RTR = CAN_RTR_DATA, .tx_buffer = {0}},
     [5] = {.can_handle = &hcan2, .txconf.StdId = 0x2ff, .txconf.IDE = CAN_ID_STD, .txconf.DLC = 0x08, .txconf.RTR = CAN_RTR_DATA, .tx_buffer = {0}},
+
+    [6] = {.can_handle = &hcan1, .txconf.StdId = 0x1fe, .txconf.IDE = CAN_ID_STD, .txconf.DLC = 0x08, .txconf.RTR = CAN_RTR_DATA, .tx_buffer = {0}},
+    [7] = {.can_handle = &hcan1, .txconf.StdId = 0x2fe, .txconf.IDE = CAN_ID_STD, .txconf.DLC = 0x08, .txconf.RTR = CAN_RTR_DATA, .tx_buffer = {0}},
+    [8] = {.can_handle = &hcan2, .txconf.StdId = 0x1fe, .txconf.IDE = CAN_ID_STD, .txconf.DLC = 0x08, .txconf.RTR = CAN_RTR_DATA, .tx_buffer = {0}},
+    [9] = {.can_handle = &hcan2, .txconf.StdId = 0x2fe, .txconf.IDE = CAN_ID_STD, .txconf.DLC = 0x08, .txconf.RTR = CAN_RTR_DATA, .tx_buffer = {0}},
+
 };
 
-static uint8_t sender_enable_flag[6] = {0};
+static uint8_t sender_enable_flag[10] = {0};
 
 static float K0, K1, K2, K3; //计算公式：K0 + K1*IW + K2*I*I + K3*w*w
 static float chassis_power_max; 
@@ -50,6 +56,21 @@ static void MotorSenderGrouping(DJIMotorInstance *instance, CAN_Init_Config_s *c
 
             break;
         case GM6020 :
+            if(motor_id < 4)
+            {
+                motor_send_num = motor_id;
+                motor_grouping = config->can_handle == &hcan1 ? 6 : 8;
+            }
+            else
+            {
+                motor_send_num = motor_id - 4;
+                motor_grouping = config->can_handle == &hcan1 ? 7 : 9;
+            }
+            config->rx_id = 0x204 + motor_id + 1;
+            sender_enable_flag[motor_grouping] = 1;
+            instance->message_num = motor_send_num;
+            instance->sender_group = motor_grouping;
+
         case LK9025 :
         case HT04 : break;
         default: break;
@@ -300,7 +321,7 @@ void DJIMotorControl(void)
 
  
 
-    for(size_t i = 0; i < 6; i++)
+    for(size_t i = 0; i < 10; i++)
     {
         if(sender_enable_flag[i])
         {

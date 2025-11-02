@@ -22,6 +22,9 @@ static Chassis_Upload_Data_s chassis_feedback_data;
 
 static DJIMotorInstance *motor_lf, *motor_rf, *motor_lb, *motor_rb;
 
+#define SPEED_CONTROL
+#ifdef SPEED_CONTROL
+
 static float chassis_vx, chassis_vy;//底盘坐标系下的底盘速度
 static float wt_lf, wt_rf, wt_lb, wt_rb; //轮子角速度max = 54000
 float temp_v;
@@ -45,7 +48,7 @@ void ChassisInit(void)
             .close_loop = SPEED_LOOP,
             .angle_feedback_source = MOTOR_FEED,
             .speed_feedback_source = MOTOR_FEED,
-            .power_control_flag = POWER_CONTROL_ENABLE,
+            .power_control_flag = POWER_CONTROL_DISABLE,
         },
         .motor_type = M3508,
     };
@@ -157,3 +160,70 @@ void ChassisTask(void)
 
     PubPushMessage(chassis_pub, (void *)&chassis_feedback_data);
 }
+
+#endif
+
+#ifdef FORCE_CONTROL
+
+static PIDInstance *x_pid, *y_pid, *w_pid;
+static float current_lf, current_rf, current_lb, current_rb;
+
+void ChassisInit(void)
+{
+    Motor_Init_Config_s chassis_motor_config = {
+        .can_init_config.can_handle = &hcan1,
+        .motor_controller_init = {
+            .current_pid_init = {
+                .Kp = 0,
+                .Ki = 0,
+                .Kd = 0,
+                .MaxOut = 16384,
+            },
+            
+        },
+        .motor_setting = {
+            .close_loop = CURRENT_LOOP,
+            .angle_feedback_source = MOTOR_FEED,
+            .speed_feedback_source = MOTOR_FEED,
+            .power_control_flag = POWER_CONTROL_DISABLE,
+            .feedforward_flag = CURRENT_FEEDFORWARD,
+        },
+        .motor_type = M3508,
+    };
+
+    chassis_motor_config.motor_controller_init.current_feedforward_ptr = &current_lf;
+    chassis_motor_config.can_init_config.tx_id = MOTOR_LF_ID;
+    chassis_motor_config.motor_setting.motor_reverse_flag = MOTOR_DIRECTION_NORMAL;
+    motor_lf = DJIMotorRegister(&chassis_motor_config);
+
+    chassis_motor_config.motor_controller_init.current_feedforward_ptr = &current_rf;
+    chassis_motor_config.can_init_config.tx_id = MOTOR_RF_ID;
+    chassis_motor_config.motor_setting.motor_reverse_flag = MOTOR_DIRECTION_NORMAL;
+    motor_rf = DJIMotorRegister(&chassis_motor_config);
+
+    chassis_motor_config.motor_controller_init.current_feedforward_ptr = &current_lb;
+    chassis_motor_config.can_init_config.tx_id = MOTOR_LB_ID;
+    chassis_motor_config.motor_setting.motor_reverse_flag = MOTOR_DIRECTION_NORMAL;
+    motor_lb = DJIMotorRegister(&chassis_motor_config);
+
+    chassis_motor_config.motor_controller_init.current_feedforward_ptr = &current_rb;
+    chassis_motor_config.can_init_config.tx_id = MOTOR_RB_ID;
+    chassis_motor_config.motor_setting.motor_reverse_flag = MOTOR_DIRECTION_NORMAL;
+    motor_rb = DJIMotorRegister(&chassis_motor_config);
+
+    PID_Init_Config_s pid_config = {
+        .Kd = 10,
+        .Ki = 0,
+        .Kd = 0,
+        .
+    };
+    x_pid = PIDRegister(&pid_config);
+    y_pid = PIDRegister(&)
+
+    chassis_pub = PubRegister("chassis_feed", sizeof(Chassis_Upload_Data_s));
+    chassis_sub = SubRegister("chassis_cmd", sizeof(Chassis_Ctrl_Cmd_s));
+}
+
+
+#endif
+

@@ -31,6 +31,7 @@
 #include "daemon.h"
 #include "Gimbal.h"
 #include "ins_task.h"
+#include "shoot.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,7 +51,10 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+UBaseType_t GimbalLevel;
+UBaseType_t MotorLevel;
+UBaseType_t ChassisLevel;
+UBaseType_t InsLevel;
 /* USER CODE END Variables */
 /* Definitions for _ChassisTask */
 osThreadId_t _ChassisTaskHandle;
@@ -94,6 +98,13 @@ const osThreadAttr_t _INSTask_attributes = {
   .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for _ShootTask */
+osThreadId_t _ShootTaskHandle;
+const osThreadAttr_t _ShootTask_attributes = {
+  .name = "_ShootTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -106,6 +117,7 @@ void _robotCmdTask(void *argument);
 void _daemonTask(void *argument);
 void _gimbalTask(void *argument);
 void INSTask(void *argument);
+void _shootTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -154,6 +166,9 @@ void MX_FREERTOS_Init(void) {
   /* creation of _INSTask */
   _INSTaskHandle = osThreadNew(INSTask, NULL, &_INSTask_attributes);
 
+  /* creation of _ShootTask */
+  _ShootTaskHandle = osThreadNew(_shootTask, NULL, &_ShootTask_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -197,6 +212,7 @@ void _motorTask(void *argument)
   for(;;)
   {
     MotorControlTask();
+    MotorLevel = uxTaskGetStackHighWaterMark(NULL);
     osDelay(1);
   }
   /* USER CODE END _motorTask */
@@ -254,7 +270,8 @@ void _gimbalTask(void *argument)
   for(;;)
   {
     GimbalTask();
-    osDelay(2);
+    GimbalLevel = uxTaskGetStackHighWaterMark(NULL);
+    osDelay(1);
   }
   /* USER CODE END _gimbalTask */
 }
@@ -273,9 +290,29 @@ void INSTask(void *argument)
   for(;;)
   {
     INS_Task();
+    InsLevel = uxTaskGetStackHighWaterMark(NULL);
     osDelay(1);
   }
   /* USER CODE END INSTask */
+}
+
+/* USER CODE BEGIN Header__shootTask */
+/**
+* @brief Function implementing the _ShootTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header__shootTask */
+void _shootTask(void *argument)
+{
+  /* USER CODE BEGIN _shootTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    ShootTask();
+    osDelay(1);
+  }
+  /* USER CODE END _shootTask */
 }
 
 /* Private application code --------------------------------------------------*/

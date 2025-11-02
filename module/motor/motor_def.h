@@ -4,7 +4,7 @@
 #include "controller.h"
 #include "bsp_can.h"
 
-#define M3508_RATIO 19.203208f
+#define M3508_RATIO 15.7647//19.203208f
 #define M3508_MX_APS 54000.0f
 
 typedef enum 

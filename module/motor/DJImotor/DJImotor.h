@@ -7,8 +7,8 @@
 #define DJI_MOTOR_CNT 12
 #define DJI_MOTOR_POWER_CONTROL_CNT 4 //需要功率控制的电机数量
 
-#define ECD_ANGLE_COEF_DJI 0.43945f
-#define SPEED_SMOOTH_COEF 1.0f
+#define ECD_ANGLE_COEF_DJI 0.043945f
+#define SPEED_SMOOTH_COEF 0.55f
 #define CURRENT_SMOOTH_COEF 0.90f
 
 typedef struct
@@ -16,7 +16,7 @@ typedef struct
     uint16_t last_ecd;
     uint16_t ecd;
     float angle_single_round;
-    float speed_aps;
+    float speed_aps; //deg/s
     int16_t real_current;
     uint8_t temperature;
 
